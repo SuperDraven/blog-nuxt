@@ -25,6 +25,7 @@
                     <Icon type="ios-thumbs-up-outline" /> 234
                   </li>
                   <li>
+
                     <Icon type="ios-chatbubbles-outline" /> 345
                   </li>
                   <Button  type="info" @click="jump(item.id)">阅读详情</Button>
