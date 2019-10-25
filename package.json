@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
-    "start": "PORT=3002 nuxt start",
+    "start": "HOST=0.0.0.0 PORT=3004 nuxt start",
     "generate": "nuxt generate",
     "test": "jest"
   },

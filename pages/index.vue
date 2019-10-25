@@ -14,7 +14,7 @@
 
           <Col span="16"><Card><div style="min-height: 200px;">
             <List item-layout="vertical" :loading="loading">
-              <ListItem v-for="item in data.article" :key="item.title" >
+              <ListItem v-for="item in data.article" :key="item.title" v-if="item.disclosure != 2" >
                 <ListItemMeta  :avatar="item.avatar" :title="item.title" :description="item.describe"  />
                 <p v-html="item.details"  style="overflow:hidden;text-overflow:ellipsis;height: 20px;"></p>
                 <template slot="action">
@@ -35,6 +35,8 @@
               </ListItem>
             </List>
           </div></Card></Col>
+
+
           <Col span="6">
             <Card style="margin: 0 auto">
               <Icon type="logo-github" />

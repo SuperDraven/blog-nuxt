@@ -448,7 +448,7 @@
   }
 </style>
 <template>
-  <div class="layout">
+  <div class="layout demo-spin-article">
     <Layout>
       <Header>
         <BlogMenu></BlogMenu>
@@ -480,6 +480,11 @@
       </Content>
       <Footer class="layout-footer-center">2011-2016 &copy; TalkingData</Footer>
     </Layout>
+    <Modal v-model="password_show" draggable scrollable title="请输入密码" @on-ok="ok"
+           @on-cancel="cancel">
+      <div> <Input v-model="password" size="large" placeholder="请输入密码" /></div>
+    </Modal>
+    <Spin size="large" fix v-if="spinShow"></Spin>
   </div>
 </template>
 <script>
@@ -490,81 +495,60 @@
   export default {
     async asyncData(obj) {
       let id = ''
+
       if (obj.route.query.id) {
         id = obj.route.query.id
-        let req = await axios.get('api/article/show/' + id, {})
-        let reqs = await axios.put('api/article/edit/pv/' + id, {})
-        if (req.data.data) {
-          obj.store.commit('increment', req.data.data)
-        }
+        if (!obj.route.query.password) {
+          let req = await axios.get('api/article/show/' + id, {})
+          let reqs = await axios.put('api/article/edit/pv/' + id, {})
+          if (req.data.data) {
+            obj.store.commit('increment', req.data.data)
+          }
         return {res :req.data.data}
+      } else {
+          obj.store.commit('increment', {
+            title:'loading',
+            details:'loading',
+            id:id
+          })
+        }
       }
-
 
     },
     data () {
 
-      const validatePass = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('Please enter your password'));
-        } else {
-          if (this.formCustom.passwdCheck !== '') {
-            // 对第二个密码框单独验证
-            this.$refs.formCustom.validateField('passwdCheck');
-          }
-          callback();
-        }
-      };
-      const validatePassCheck = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('Please enter your password again'));
-        } else if (value !== this.formCustom.passwd) {
-          callback(new Error('The two input passwords do not match!'));
-        } else {
-          callback();
-        }
-      };
-      const validateAge = (rule, value, callback) => {
-        if (!value) {
-          return callback(new Error('Age cannot be empty'));
-        }
-        // 模拟异步验证效果
-        setTimeout(() => {
-          if (!Number.isInteger(value)) {
-            callback(new Error('Please enter a numeric value'));
-          } else {
-            if (value < 18) {
-              callback(new Error('Must be over 18 years of age'));
-            } else {
-              callback();
-            }
-          }
-        }, 1000);
-      };
-
       return {
-        formCustom: {
-          passwd: '',
-          passwdCheck: '',
-          age: ''
-        },
-        ruleCustom: {
-          passwd: [
-            { validator: validatePass, trigger: 'blur' }
-          ],
-          passwdCheck: [
-            { validator: validatePassCheck, trigger: 'blur' }
-          ],
-          age: [
-            { validator: validateAge, trigger: 'blur' }
-          ]
-        },
+        spinShow:true,
+        password:'',
+        password_show:true,
         data:{},
         loading : true
       }
     },
+    methods: {
+     async ok () {
+       let req = await axios.post('api/article/passwordshow' , {
+         "id":this.$store.state.k1.id,
+         "password":this.password
+       });
+
+       if (req.status === 200) {
+         this.$store.commit('increment', req.data.data)
+         this.spinShow = false
+       } else {
+         this.password_show = true
+       }
+      },
+      cancel () {
+        this.$Message.info('Clicked cancel');
+      }
+    },
     computed: {
       article:function(){
+        if (this.$store.state.k1.title != 'loading') {
+          this.spinShow = false
+          this.password_show = false
+        }
         return this.$store.state.k1
       },
       compiledMarkdown: function () {
