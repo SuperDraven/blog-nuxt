@@ -22,7 +22,7 @@
                     <Icon type="md-eye" /> {{ item.pv }}
                   </li>
                   <li>
-                    <Icon type="ios-thumbs-up-outline" /> 238
+                    <Icon type="ios-thumbs-up-outline" /> 2383
                   </li>
                   <li>
                     <Icon type="ios-chatbubbles-outline" /> 345
