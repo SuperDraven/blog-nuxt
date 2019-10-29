@@ -531,7 +531,6 @@
          "id":this.$store.state.k1.id,
          "password":this.password
        });
-
        if (req.status === 200) {
          this.$store.commit('increment', req.data.data)
          this.spinShow = false

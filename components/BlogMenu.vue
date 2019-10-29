@@ -9,38 +9,53 @@
        </MenuItem>
        <MenuItem name="2">
          <Icon type="ios-keypad"></Icon>
-         Item 2
+         时间轴
        </MenuItem>
-       <MenuItem name="3">
-         <Icon type="ios-analytics"></Icon>
-         Item 3
-       </MenuItem>
-       <MenuItem name="3">
-         <Icon type="ios-paper"></Icon>
-         Item 4
-       </MenuItem>
+       <Submenu name="3">
+         <template slot="title">
+           <Icon type="ios-stats" />
+           分类
+         </template>
+         <MenuGroup title="分类">
+           <MenuItem name="3-1" v-for="item in data" :to="'/class/'+item.id">{{ item.title }}</MenuItem>
+         </MenuGroup>
+       </Submenu>
      </div>
-     <div class="layout-register">
-       <MenuItem name="3">
-         <Icon type="ios-paper"></Icon>
-         登陆
-       </MenuItem>
-       <MenuItem name="3">
-         <Icon type="ios-paper"></Icon>
-         注册
-       </MenuItem>
-     </div>
+     <!--<div class="layout-register">-->
+       <!--<MenuItem name="3">-->
+         <!--<Icon type="ios-paper"></Icon>-->
+         <!--登陆-->
+       <!--</MenuItem>-->
+       <!--<MenuItem name="3">-->
+         <!--<Icon type="ios-paper"></Icon>-->
+         <!--注册-->
+       <!--</MenuItem>-->
+     <!--</div>-->
    </Menu>
  </div>
 </template>
 
 <script>
+  import axios from '~/plugins/axios'
 
   export default {
     data () {
       return {
+        data:{},
         theme1: 'primary'
       }
+    },
+    created() {
+      this.GetCategoryList();
+      console.log(this.data)
+    },
+    methods:{
+    async GetCategoryList() {
+      let req = await  axios.get('api/categorylist', {})
+      if (req.data.data) {
+        this.data =req.data.data
+      }
+    }
     },
     name: 'BlogMenu'
   }

@@ -21,14 +21,15 @@
                   <li>
                     <Icon type="md-eye" /> {{ item.pv }}
                   </li>
-                  <li>
-                    <Icon type="ios-thumbs-up-outline" />1
-                  </li>
-                  <li>
-                    <Icon type="ios-chatbubbles-outline" /> 345
-                  </li>
-                  <Button  type="info" @click="jump(item.id)">阅读详情</Button>
+
+                  <!--<li>-->
+                    <!--<Icon type="ios-chatbubbles-outline" /> 345-->
+                  <!--</li>-->
+                  <p>
+                    <Button  type="info" @click="jump(item.id)">阅读详情</Button>
+                  </p>
                 </template>
+                <!--<p  style="overflow:hidden;text-overflow:ellipsis;height: 20px;">aaaa</p>-->
                 <template slot="extra">
                   <!--<img v-if="item.group_photo[0] != 'undefined'" :src="item.group_photo[0]" style="width: 280px">-->
                 </template>

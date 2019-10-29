@@ -10,7 +10,7 @@ import qs from 'qs'
 const env = process.env.NODE_ENV || 'development'
 
 let baseUrl = {
-  development: 'http://blog.houlahoula.com:8086',
+  development: 'http://localhost:8086',
   test: 'https://test.domain.com',
   production: 'http://blog.houlahoula.com:8086'
 }

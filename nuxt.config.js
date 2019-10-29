@@ -1,9 +1,11 @@
 
+// module.exports =
 export default {
   mode: 'universal',
   /*
   ** Headers of the page
   */
+
   head: {
     title: process.env.npm_package_name || '',
     meta: [
@@ -24,6 +26,7 @@ export default {
   ** Global CSS
   */
   css: [
+    'assets/main.css',
     'iview/dist/styles/iview.css'
   ],
   /*
