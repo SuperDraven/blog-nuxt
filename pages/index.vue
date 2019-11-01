@@ -12,6 +12,7 @@
         </Breadcrumb>
         <Row>
 
+
           <Col span="16"><Card><div style="min-height: 200px;">
             <List item-layout="vertical" :loading="loading">
               <ListItem v-for="item in data.article" :key="item.title" v-if="item.disclosure != 2" >
