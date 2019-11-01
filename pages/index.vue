@@ -12,6 +12,7 @@
         </Breadcrumb>
         <Row>
 
+
           <Col span="16"><Card><div style="min-height: 200px;">
             <List item-layout="vertical" :loading="loading">
               <articleLIstitem :articlelist="data.article"></articleLIstitem>
