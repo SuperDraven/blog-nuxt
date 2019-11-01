@@ -446,6 +446,15 @@
   .layout-footer-center{
     text-align: center;
   }
+  .issue{
+    /*margin: 0 50px;*/
+  }
+  textarea{
+    display: block;
+    min-height: 100px;
+    max-height: 200px;
+    width:100%;
+  }
 </style>
 <template>
   <div class="layout demo-spin-article">
@@ -477,7 +486,14 @@
           <!--</Form>-->
         <!--</div>-->
         <!--</Card>-->
+        <Card>
+          <div class="issue">
+            <textarea name="" id="" placeholder="无敌" ></textarea>
+          </div>
+        </Card>
       </Content>
+
+
       <Footer class="layout-footer-center">2011-2016 &copy; TalkingData</Footer>
     </Layout>
     <Modal v-model="password_show" draggable scrollable title="请输入密码" @on-ok="ok"

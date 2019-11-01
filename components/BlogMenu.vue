@@ -7,7 +7,7 @@
          <Icon type="ios-navigate"></Icon>
          首页
        </MenuItem>
-       <MenuItem name="2">
+       <MenuItem name="2" to="/timeline">
          <Icon type="ios-keypad"></Icon>
          时间轴
        </MenuItem>
