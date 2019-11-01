@@ -55,7 +55,7 @@
 <script>
 import BlogMenu from '~/components/BlogMenu.vue'
 import axios from '~/plugins/axios'
-import articleLIstitem from '~/components/articleListitem.vue'
+import articleLIstitem from '~/components/articleListItem.vue'
 
 export default {
   data () {
