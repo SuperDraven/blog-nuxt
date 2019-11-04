@@ -532,6 +532,8 @@
           if (commentList.data.data) {
             console.log( commentList.data.data)
             obj.store.commit('CommentList', commentList.data.data)
+          } else {
+            obj.store.commit('CommentList', [])
           }
           return {res :req.data.data}
         } else {
