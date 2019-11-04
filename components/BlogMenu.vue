@@ -9,8 +9,9 @@
        </MenuItem>
        <MenuItem name="2" to="/timeline">
          <Icon type="ios-keypad"></Icon>
-         时间轴
+         时间轴2
        </MenuItem>
+
        <Submenu name="3">
          <template slot="title">
            <Icon type="ios-stats" />
@@ -20,6 +21,10 @@
            <MenuItem name="3-1" v-for="item in data" :to="'/class/'+item.id">{{ item.title }}</MenuItem>
          </MenuGroup>
        </Submenu>
+       <MenuItem name="2" to="/message_board">
+         <Icon type="ios-albums-outline" />
+         留言板
+       </MenuItem>
      </div>
      <!--<div class="layout-register">-->
        <!--<MenuItem name="3">-->
@@ -76,7 +81,7 @@
     margin-right: 20px;
   }
   .layout-nav{
-    width: 421px;
+    width: 500px;
     margin: 0 auto;
     /*margin-right: 20px;*/
   }

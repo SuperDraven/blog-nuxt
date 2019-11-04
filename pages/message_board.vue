@@ -1,3 +1,146 @@
+<template>
+  <div class="layout">
+    <Layout>
+      <Header>
+        <BlogMenu></BlogMenu>
+      </Header>
+      <Content :style="{padding: '0 50px'}">
+        <Breadcrumb :style="{margin: '20px 0'}">
+          <BreadcrumbItem>首页</BreadcrumbItem>
+          <BreadcrumbItem>留言板</BreadcrumbItem>
+        </Breadcrumb>
+        <Card>
+          <List item-layout="vertical">
+              <Input  v-model="data.content" @keyup.native="Htmlparsing(data.content)" type="textarea" :autosize="{minRows: 5,maxRows: 5}" placeholder="留言" />
+            <Divider>MarkDown</Divider>
+            <Card >
+              <div ref="Commentcontent"></div>
+            </Card>
+          </List>
+
+        </Card>
+        <Card style="margin-top: 20px">
+          <Row>
+          <Col span="24">
+            <Form  label-position="left" :label-width="100">
+              <FormItem label="姓名">
+                <Input v-model="data.name"></Input>
+              </FormItem>
+              <FormItem label="邮箱">
+                <Input v-model="data.email"></Input>
+              </FormItem>
+              <FormItem label="验证码"  class="captcha">
+                <Input v-model="captchacode" placeholder="请输入验证码" style="width: 300px;height: 100px" />
+                <img :src="captcha" alt="" @click="Getcaptch()">
+              </FormItem>
+            </Form>
+          </Col>
+          <Col span="12">&nbsp</Col>
+          <Col span="12" style="text-align: right"><Button type="primary" @click="CreateMessageBoard()">评论</Button></Col>
+          </Row>
+        </Card>
+        <Card v-for="item in MessageBoardList" style="margin-top: 20px">
+          <p slot="title">
+            <!--<Icon type="ios-film-outline"></Icon>-->
+              {{ item.name }}
+          </p>
+          <span slot="extra"><Time :time="item.create_at * 1000" type="datetime" /></span>
+          <p v-html="Parsingmarked(item.content)"></p>
+        </Card>
+      </Content>
+
+      <Footer class="layout-footer-center">2011-2016 &copy; TalkingData</Footer>
+    </Layout>
+  </div>
+</template>
+
+
+<script>
+  import marked from '~/plugins/marked'
+  import BlogMenu from '~/components/BlogMenu.vue'
+  import axios from '~/plugins/axios'
+
+  export default {
+      name: "message_board",
+      data(){
+          return {
+            captchacode:'',
+            captchaId:'',
+            captcha:'',
+            MessageBoardList:[],
+            data:{}
+          }
+      },
+      created(){
+        this.Getcaptch()
+        this.GetMessageBoard()
+      },
+      methods: {
+        async GetMessageBoard() {
+          let req = await axios.get('api/MessageBoard/MessageBoardListShow' , {});
+          if (req.data.data) {
+            this.MessageBoardList = req.data.data
+          }
+
+        },
+        async Htmlparsing(string) {
+          // console.log(string)
+          this.$refs.Commentcontent.innerHTML = this.Parsingmarked(string)
+          console.log(this.$refs.Commentcontent)
+
+        },
+        async CreateMessageBoard() {
+          if (!this.data.name || this.data.name == "") {
+
+              this.$Message.error("请填写姓名");
+              return false;
+          }
+          if (!this.data.email || this.data.email == "") {
+
+            this.$Message.error("请填写邮箱");
+            return false;
+          }
+          if (!this.data.content || this.data.content == "") {
+
+            this.$Message.error("请填写内容");
+            return false;
+          }
+          if (!this.captchacode || this.captchacode == "") {
+
+            this.$Message.error("请填写验证码");
+            return false;
+          }
+          let Verifycaptcha = await axios.get('api/captcha/verify/'+ this.captchaId +'/'+ this.captchacode , {});
+          if (Verifycaptcha.status === 200) {
+            let req = await axios.post('api/MessageBoard/MessageBoardCreate', this.data);
+            if (req.status === 200) {
+              var date = (new Date()).getTime() / 1000;
+              this.MessageBoardList.push({
+                'name':this.data.name,
+                'content':this.data.content,
+                'create_at':date
+              })
+              this.$Message.success("留言成功")
+            }
+          }
+          console.log(11)
+        },
+        async Getcaptch() {
+          let req = await axios.get('api/getCaptcha/GenerateCaptchaHandler' , {});
+          console.log(req)
+          this.captcha = req.data.data.imageUrl
+          this.captchaId = req.data.data.captchaId
+        },
+        Parsingmarked(string) {
+          return marked(string, { sanitize: true })
+        },
+      },
+      components: {
+        BlogMenu
+      }
+    }
+</script>
+
 <style>
   body{
     margin: 0 auto;
@@ -457,193 +600,4 @@
   }
 
 </style>
-<template>
-  <div class="layout demo-spin-article">
-    <Layout>
-      <Header>
-        <BlogMenu></BlogMenu>
-      </Header>
-      <Content :style="{padding: '0 50px'}">
-        <Breadcrumb :style="{margin: '20px 0'}">
-          <BreadcrumbItem>首页</BreadcrumbItem>
-          <!--<BreadcrumbItem>Components</BreadcrumbItem>-->
-          <BreadcrumbItem>{{ article.title }}</BreadcrumbItem>
-        </Breadcrumb>
-        <Card>
-          <div style="min-height: 200px;" v-html="compiledMarkdown">
-            Content
-          </div>
-        </Card>
-        <Card style="margin-top: 20px">
-        <div style="min-height: 200px" >
-        <Form ref="formCustom" :model="formCustom">
-        <FormItem label="">
-          <Input  v-model="comment.content" @keyup.native="Htmlparsing(comment.content)" type="textarea" :autosize="{minRows: 5,maxRows: 5}" placeholder="Enter something..." />
-        </FormItem>
-        <FormItem>
-          <Divider>MarkDown</Divider>
-          <Card ><div ref="Commentcontent"></div></Card>
-          <FormItem label="" style="margin-top: 20px">
-            <Input v-model="captchacode" placeholder="请输入验证码" style="width: 300px" />
-            <img :src="captcha" alt="" @click="Getcaptch()">
-          </FormItem>
-          <Button type="primary" @click="CreateComment()">评论</Button>
 
-        <!--<Button @click="handleReset('formCustom')" style="margin-left: 8px">Reset</Button>-->
-        </FormItem>
-        </Form>
-        </div>
-        </Card>
-        <Card style="margin-top: 20px"  v-for="item in commentLists">
-
-          <Row >
-            <Col span="24" style="min-height: 50px;line-height: 50px" v-html="Parsingmarked(item.content)"></Col>
-            <Col span="12">&nbsp</Col>
-            <Col span="12" style="min-height: 50px;line-height: 50px;text-align: right"><Time :time="item.create_at * 1000" type="datetime" /></Col>
-          </Row>
-        </Card>
-
-      </Content>
-
-
-      <Footer class="layout-footer-center">2011-2016 &copy; TalkingData</Footer>
-    </Layout>
-    <Modal v-model="password_show" draggable scrollable title="请输入密码" @on-ok="ok"
-           @on-cancel="cancel">
-      <div> <Input v-model="password" size="large" placeholder="请输入密码" /></div>
-    </Modal>
-    <Spin size="large" fix v-if="spinShow"></Spin>
-  </div>
-</template>
-<script>
-  import BlogMenu from '~/components/BlogMenu.vue'
-  import axios from '~/plugins/axios'
-  import marked from '~/plugins/marked'
-
-  export default {
-    async asyncData(obj) {
-      let id = ''
-
-      if (obj.route.query.id) {
-        id = obj.route.query.id
-        if (!obj.route.query.password) {
-          let req = await axios.get('api/article/show/' + id, {})
-          let reqs = await axios.put('api/article/edit/pv/' + id, {})
-          if (req.data.data) {
-            obj.store.commit('ArticleDetail', req.data.data)
-          }
-          let commentList = await axios.get('api/Comment/CommentShowList/' +id, {})
-          if (commentList.data.data) {
-            console.log( commentList.data.data)
-            obj.store.commit('CommentList', commentList.data.data)
-          } else {
-            obj.store.commit('CommentList', [])
-          }
-          return {res :req.data.data}
-        } else {
-          obj.store.commit('ArticleDetail', {
-            title:'loading',
-            details:'loading',
-            id:id
-          })
-        }
-      }
-
-    },
-    data () {
-
-      return {
-        formCustom:{},
-        captchacode:'',
-        captchaId:'',
-        captcha:'',
-        commentList:[],
-        comment:{
-          'content':''
-        },
-        spinShow:true,
-        password:'',
-        password_show:true,
-        data:{},
-        loading : true
-      }
-    },
-    created(){
-      this.Getcaptch()
-    },
-    methods: {
-     async Htmlparsing(string) {
-        // console.log(string)
-        this.$refs.Commentcontent.innerHTML = this.Parsingmarked(string)
-       console.log(this.$refs.Commentcontent)
-
-     },
-      async Getcaptch() {
-        let req = await axios.get('api/getCaptcha/GenerateCaptchaHandler' , {});
-        console.log(req)
-        this.captcha = req.data.data.imageUrl
-        this.captchaId = req.data.data.captchaId
-      },
-      Parsingmarked(string) {
-        return marked(string, { sanitize: true })
-      },
-      async ok () {
-        let req = await axios.post('api/article/passwordshow' , {
-          "id":this.$store.state.ArticleDetail.id,
-          "password":this.password
-        });
-        if (req.status === 200) {
-          this.$store.commit('increment', req.data.data)
-          this.spinShow = false
-        } else {
-          this.password_show = true
-        }
-      },
-      async CreateComment() {
-
-        let Verifycaptcha = await axios.get('api/captcha/verify/'+ this.captchaId +'/'+ this.captchacode , {});
-        if (Verifycaptcha.status === 200) {
-          var date = (new Date()).getTime() / 1000;
-          this.comment.article_id = this.$store.state.ArticleDetail.id;
-          let req = await axios.post('api/Comment/CommentCreate' ,this.comment);
-          this.commentList.push({
-            'content': this.comment.content,
-            'create_at':date
-          })
-          console.log(this.commentList)
-          this.$store.commit('CommentList', this.commentList)
-          this.$Message.success("评论成功");
-          this.Getcaptch()
-        }
-
-      },
-      cancel () {
-        this.$Message.info('Clicked cancel');
-      }
-    },
-    computed: {
-      commentLists:function() {
-        this.commentList = this.$store.state.CommentList.slice()
-
-        if (this.$store.state.CommentList.slice().length ==0) {
-          this.commentList = []
-
-        }
-        return this.$store.state.CommentList
-      },
-      article:function(){
-        if (this.$store.state.ArticleDetail.title != 'loading') {
-          this.spinShow = false
-          this.password_show = false
-        }
-        return this.$store.state.ArticleDetail
-      },
-      compiledMarkdown: function () {
-        return marked(this.$store.state.ArticleDetail.details, { sanitize: true })
-      }
-    },
-    components: {
-      BlogMenu
-    }
-  }
-</script>
