@@ -610,6 +610,11 @@
     computed: {
       commentLists:function() {
         this.commentList = this.$store.state.CommentList.slice()
+
+        if (this.$store.state.CommentList.slice().length ==0) {
+          this.commentList = []
+
+        }
         return this.$store.state.CommentList
       },
       article:function(){
