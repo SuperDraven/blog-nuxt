@@ -3,9 +3,11 @@ export const state = () =>({
 });
 
 export const mutations = {
-    increment (state, data, d) {
-      console.log('index_state', state);
-      console.log(data);
-      state.k1 =data
-    }
+  ArticleDetail (state, data, d) {
+      state.ArticleDetail = data
+    },
+
+  CommentList (state, data, d) {
+    state.CommentList = data
+  }
 };

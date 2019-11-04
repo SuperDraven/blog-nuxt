@@ -10,10 +10,10 @@
 
 
   /*@media screen and (min-width: 768px) {*/
-    /*body {*/
-      /*width: 748px;*/
-      /*margin: 10px auto;*/
-    /*}*/
+  /*body {*/
+  /*width: 748px;*/
+  /*margin: 10px auto;*/
+  /*}*/
   /*}*/
   h1, h2, h3, h4 {
     color: #111111;
@@ -71,7 +71,7 @@
     margin: 0;
   }
   /*li {*/
-    /*line-height: 24px;*/
+  /*line-height: 24px;*/
   /*}*/
   p, ul, ol {
     font-size: 16px;
@@ -452,12 +452,10 @@
   .issue{
     /*margin: 0 50px;*/
   }
-  textarea{
-    display: block;
-    min-height: 100px;
-    max-height: 200px;
-    width:100%;
+  .ivu-input{
+    padding: 0;
   }
+
 </style>
 <template>
   <div class="layout demo-spin-article">
@@ -476,24 +474,31 @@
             Content
           </div>
         </Card>
-        <!--<Card style="margin-top: 20px">-->
-        <!--<div style="min-height: 200px" >-->
-          <!--<Form ref="formCustom" :model="formCustom" :rules="ruleCustom" :label-width="80">-->
-            <!--<FormItem label="" prop="desc">-->
-              <!--<Input v-model="data.desc" type="textarea" :autosize="{minRows: 2,maxRows: 2}" placeholder="评论"></Input>-->
-            <!--</FormItem>-->
-            <!--<FormItem>-->
-              <!--<Button type="primary" @click="handleSubmit('formCustom')">评论</Button>-->
-              <!--&lt;!&ndash;<Button @click="handleReset('formCustom')" style="margin-left: 8px">Reset</Button>&ndash;&gt;-->
-            <!--</FormItem>-->
-          <!--</Form>-->
-        <!--</div>-->
-        <!--</Card>-->
-        <Card>
-          <div class="issue">
-            <textarea name="" id="" placeholder="无敌" ></textarea>
-          </div>
+        <Card style="margin-top: 20px">
+        <div style="min-height: 200px" >
+        <Form ref="formCustom" :model="formCustom" :rules="ruleCustom">
+        <FormItem label="">
+          <Input v-model="comment.content" type="textarea" :autosize="{minRows: 5,maxRows: 5}" placeholder="Enter something..." />        </FormItem>
+        <FormItem>
+          <FormItem label="">
+            <Input v-model="captchacode" placeholder="请输入验证码" style="width: 300px" />
+            <img :src="captcha" alt="" @click="Getcaptch">
+          </FormItem>
+          <Button type="primary" @click="CreateComment()">评论</Button>
+
+        <!--<Button @click="handleReset('formCustom')" style="margin-left: 8px">Reset</Button>-->
+        </FormItem>
+        </Form>
+        </div>
         </Card>
+        <Card style="margin-top: 20px"  v-for="item in commentLists">
+
+          <Row >
+            <Col span="12" style="min-height: 50px;line-height: 50px">{{ item.content }}</Col>
+            <Col span="12" style="min-height: 50px;line-height: 50px;text-align: right"><Time :time="item.create_at * 1000" type="datetime" /></Col>
+          </Row>
+        </Card>
+
       </Content>
 
 
@@ -521,11 +526,16 @@
           let req = await axios.get('api/article/show/' + id, {})
           let reqs = await axios.put('api/article/edit/pv/' + id, {})
           if (req.data.data) {
-            obj.store.commit('increment', req.data.data)
+            obj.store.commit('ArticleDetail', req.data.data)
           }
-        return {res :req.data.data}
-      } else {
-          obj.store.commit('increment', {
+          let commentList = await axios.get('api/Comment/CommentShowList/' +id, {})
+          if (commentList.data.data) {
+            console.log( commentList.data.data)
+            obj.store.commit('CommentList', commentList.data.data)
+          }
+          return {res :req.data.data}
+        } else {
+          obj.store.commit('ArticleDetail', {
             title:'loading',
             details:'loading',
             id:id
@@ -537,6 +547,12 @@
     data () {
 
       return {
+        formCustom:{},
+        captchacode:'',
+        captchaId:'',
+        captcha:'',
+        commentList:[],
+        comment:{},
         spinShow:true,
         password:'',
         password_show:true,
@@ -544,33 +560,65 @@
         loading : true
       }
     },
+    created(){
+      this.Getcaptch()
+    },
     methods: {
-     async ok () {
-       let req = await axios.post('api/article/passwordshow' , {
-         "id":this.$store.state.k1.id,
-         "password":this.password
-       });
-       if (req.status === 200) {
-         this.$store.commit('increment', req.data.data)
-         this.spinShow = false
-       } else {
-         this.password_show = true
-       }
+      async Getcaptch() {
+        let req = await axios.get('api/getCaptcha/GenerateCaptchaHandler' , {});
+        console.log(req)
+        this.captcha = req.data.data.imageUrl
+        this.captchaId = req.data.data.captchaId
+      },
+      async ok () {
+        let req = await axios.post('api/article/passwordshow' , {
+          "id":this.$store.state.ArticleDetail.id,
+          "password":this.password
+        });
+        if (req.status === 200) {
+          this.$store.commit('increment', req.data.data)
+          this.spinShow = false
+        } else {
+          this.password_show = true
+        }
+      },
+      async CreateComment() {
+
+        let Verifycaptcha = await axios.get('api/captcha/verify/'+ this.captchaId +'/'+ this.captchacode , {});
+        if (Verifycaptcha.status === 200)
+        {
+          var date = (new Date()).getTime() / 1000;
+          this.comment.article_id = this.$store.state.ArticleDetail.id;
+          let req = await axios.post('api/Comment/CommentCreate' ,this.comment);
+          this.commentList.push({
+            'content': this.comment.content,
+            'create_at':date
+          })
+          console.log(this.commentList)
+          this.$store.commit('CommentList', this.commentList)
+          this.$Message.success("评论成功");
+          this.Getcaptch()
+        }
+
       },
       cancel () {
         this.$Message.info('Clicked cancel');
       }
     },
     computed: {
+      commentLists:function() {
+        this.commentList = this.$store.state.CommentList.slice()
+        return this.$store.state.CommentList
+      },
       article:function(){
-        if (this.$store.state.k1.title != 'loading') {
+        if (this.$store.state.ArticleDetail.title != 'loading') {
           this.spinShow = false
           this.password_show = false
         }
-        return this.$store.state.k1
+        return this.$store.state.ArticleDetail
       },
       compiledMarkdown: function () {
-        return marked(this.$store.state.k1.details, { sanitize: true })
+        return marked(this.$store.state.ArticleDetail.details, { sanitize: true })
       }
     },
     components: {

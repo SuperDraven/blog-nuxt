@@ -6,8 +6,8 @@
       </Header>
       <Content :style="{padding: '0 50px'}">
         <Breadcrumb :style="{margin: '20px 0'}">
-          <BreadcrumbItem>Home</BreadcrumbItem>
-          <BreadcrumbItem>Components</BreadcrumbItem>
+          <BreadcrumbItem>首页</BreadcrumbItem>
+          <BreadcrumbItem>分类</BreadcrumbItem>
           <BreadcrumbItem>Layout</BreadcrumbItem>
         </Breadcrumb>
         <Card>
@@ -29,7 +29,7 @@
     async asyncData(obj) {
       let id = ''
 
-      console.log(obj.route.params.id)
+      // console.log(obj.route.params.id)
       // /article/GetCategoryArticleList/:id
       if (obj.route.params.id) {
         id = obj.route.params.id

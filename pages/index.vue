@@ -17,11 +17,15 @@
             <List item-layout="vertical" :loading="loading">
               <articleLIstitem :articlelist="data.article"></articleLIstitem>
             </List>
-          </div></Card></Col>
+          </div></Card>
+          </Col>
 
 
-          <Col span="6">
-            <Card style="margin: 0 auto">
+          <Col span="6" offset="2">
+            <Card >
+              <p slot="title">
+                社交
+              </p>
               <Icon type="logo-github" />
             <Tag color="primary">primary</Tag>
             <Tag color="success">success</Tag>
@@ -41,7 +45,10 @@
             <Tag color="purple">purple</Tag>
             <Tag color="#FFA2D3">Custom Color</Tag>
           </Card>
-            <Card style="margin: 0 auto">
+            <Card style="margin-top: 20px">
+              <p slot="title">
+                标签
+              </p>
               <Tag :color="item.color" v-for="item in data.label">{{ item.title }}</Tag>
             </Card>
           </Col>

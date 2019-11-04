@@ -29,10 +29,26 @@
         props: {
           articlelist: [],
         },
+      data () {
+        return {
+          articlelist:[
+            {
+              title: 'This is title 1',
+              group_photo:[
+                'aaa'
+              ],
+              description: 'This is description, this is description, this is description.',
+              avatar: 'https://dev-file.iviewui.com/userinfoPDvn9gKWYihR24SpgC319vXY8qniCqj4/avatar',
+              content: 'This is the content, this is the content, this is the content, this is the content.'
+            }
+          ],
+          loading : true
+        }
+      },
       methods:{
         jump(id) {
           console.log(11)
-          this.$router.push({path: '/details', query: {id: id}})
+          this.$router.push({path: '/details/', query: {id: id}})
         },
       }
     }
