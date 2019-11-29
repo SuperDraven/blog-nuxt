@@ -19,7 +19,7 @@
             <FormItem>
 
               <Button type="primary" @click="Converttouppercase()">转换为大写</Button>
-              <Button type="primary" @click="Converttolowercase()">转换为小写2</Button>
+              <Button type="primary" @click="Converttolowercase()">转换为小写21</Button>
 
               <!--<Button @click="handleReset('formCustom')" style="margin-left: 8px">Reset</Button>-->
             </FormItem>
