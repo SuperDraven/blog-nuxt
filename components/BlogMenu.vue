@@ -25,6 +25,15 @@
          <Icon type="ios-albums-outline" />
          留言板
        </MenuItem>
+       <Submenu name="4">
+         <template slot="title">
+           <Icon type="ios-stats" />
+           实验室
+         </template>
+         <MenuGroup title="实验室">
+           <MenuItem name="4-1"  to="/laboratory/Caseconversion/">大小写转换</MenuItem>
+         </MenuGroup>
+       </Submenu>
      </div>
      <!--<div class="layout-register">-->
        <!--<MenuItem name="3">-->
@@ -81,7 +90,7 @@
     margin-right: 20px;
   }
   .layout-nav{
-    width: 500px;
+    width: 589px;
     margin: 0 auto;
     /*margin-right: 20px;*/
   }

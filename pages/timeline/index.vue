@@ -8,31 +8,16 @@
         <Breadcrumb :style="{margin: '20px 0'}">
           <BreadcrumbItem>首页</BreadcrumbItem>
           <!--<BreadcrumbItem>Components</BreadcrumbItem>-->
-          <BreadcrumbItem>aaa</BreadcrumbItem>
+          <BreadcrumbItem>时间轴</BreadcrumbItem>
         </Breadcrumb>
         <Card>
           <div style="min-height: 200px;" >
             <Timeline>
-              <TimelineItem>
-                <p class="time">1976年</p>
-                <p class="content">Apple I 问世</p>
+              <TimelineItem v-for="item in data">
+                <p class="time"><Time :time="item.create_at * 1000" type="datetime" /></p>
+                <p class="content">{{ item.title }}</p>
               </TimelineItem>
-              <TimelineItem>
-                <p class="time">1984年</p>
-                <p class="content">发布 Macintosh</p>
-              </TimelineItem>
-              <TimelineItem>
-                <p class="time">2007年</p>
-                <p class="content">发布 iPhone</p>
-              </TimelineItem>
-              <TimelineItem>
-                <p class="time">2010年</p>
-                <p class="content">发布 iPad</p>
-              </TimelineItem>
-              <TimelineItem>
-                <p class="time">2011年10月5日</p>
-                <p class="content">史蒂夫·乔布斯去世</p>
-              </TimelineItem>
+
             </Timeline>
           </div>
         </Card>
@@ -44,11 +29,28 @@
 
 <script>
   import BlogMenu from '~/components/BlogMenu.vue'
+  import axios from '~/plugins/axios'
 
   export default {
-        name: "index.vue",
+    name: "index.vue",
+    data(){
+      return {
+        data:{}
+      }
+    },
     components: {
       BlogMenu,
+     },
+    created(){
+      this.GetTimeLineList()
+    },
+    methods:{
+    async  GetTimeLineList() {
+        let req = await axios.get("api/timeline/list", {})
+        if (req.data.data) {
+          this.data = req.data.data
+        }
+      }
     }
     }
 </script>
